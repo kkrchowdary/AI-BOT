@@ -3,13 +3,14 @@
 Provides a ChatBot class that wraps the language model + tool calls, a FastAPI
 endpoint, and a CLI mode for interactive use.
 """
+
 import json
 
 import ollama
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from models import weather, ChatRequest, ChatResponse, WeatherAPIError
+from models import weather, ChatRequest, ChatResponse
 from prompts import SYSTEM_PROMPT
 from tools import TOOLS
 
@@ -24,7 +25,6 @@ OPTIONS = {
     "num_predict": 300,
     "num_ctx": 4096,
 }
-
 
 class ChatBot:
     """Manages chatbot interactions with the language model and tool calling.
@@ -97,11 +97,21 @@ class ChatBot:
 
         if tool_calls:
             # Record the assistant partial response that included the tool call
-            self.messages.append({"role": "assistant", "content": content, "tool_calls": tool_calls})
+            self.messages.append(
+                {
+                    "role": "assistant",
+                    "content": content,
+                    "tool_calls": tool_calls,
+                }
+            )
             for call in tool_calls:
                 function = call["function"] if isinstance(call, dict) else call.function
                 name = function["name"] if isinstance(function, dict) else function.name
-                arguments = function["arguments"] if isinstance(function, dict) else function.arguments
+                arguments = (
+                    function["arguments"]
+                    if isinstance(function, dict)
+                    else function.arguments
+                )
 
                 # Resolve supported tool calls explicitly
                 if name == "get_weather":
@@ -164,13 +174,5 @@ def run_cli():
 
 
 if __name__ == "__main__":
-    # Run with: uvicorn main:app --reload
-    # Or uncomment run_cli() below to run interactive CLI mode instead:
-    # run_cli()
-
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",  # Listen on all network interfaces
-        port=8000,        # Default FastAPI port
-        reload=True,      # Auto-reload on code changes (disable in production)
-    )
+    # No --reload here: reload child process skips breakpoints. F5 = Debug FastAPI.
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)

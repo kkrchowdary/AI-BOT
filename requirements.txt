@@ -6,4 +6,5 @@ pydantic
 ollama
 ipykernel
 streamlit
-pylint  
+pylint
+debugpy

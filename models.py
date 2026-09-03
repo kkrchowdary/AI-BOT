@@ -10,7 +10,8 @@ Note: The weather() helper is intentionally minimal and returns mocked data so
 that the application can run without an external weather API. Replace with a
 real implementation as needed.
 """
-from typing import Optional, Dict
+
+from typing import Optional
 
 from pydantic import BaseModel
 
@@ -31,7 +32,7 @@ class WeatherAPIError(Exception):
     """Exception raised when a weather lookup fails."""
 
 
-def weather(city: Optional[str]) -> Dict[str, str]:
+def weather(city: Optional[str]) -> dict[str, str]:
     """Return a simple mocked weather result for the given city.
 
     This is a placeholder implementation. In production replace this with a

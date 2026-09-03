@@ -2,41 +2,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug FastAPI (no-reload)",
-      "type": "python",
+      "name": "Debug FastAPI",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
-      "args": [
-        "main:app",
-        "--host",
-        "127.0.0.1",
-        "--port",
-        "8000"
-      ],
-      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
-      "console": "integratedTerminal",
-      "envFile": "${workspaceFolder}/.env",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}"
-      },
+      "args": ["main:app", "--host", "127.0.0.1", "--port", "8000"],
       "cwd": "${workspaceFolder}",
-      "justMyCode": true,
-      "subProcess": true
-    },
-    {
-      "name": "Attach to debugpy (for --reload)",
-      "type": "python",
-      "request": "attach",
-      "connect": {
-        "host": "localhost",
-        "port": 5678
-      },
-      "pathMappings": [
-        {
-          "localRoot": "${workspaceFolder}",
-          "remoteRoot": "${workspaceFolder}"
-        }
-      ]
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal"
     }
   ]
 }

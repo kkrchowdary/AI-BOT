@@ -1,33 +1,31 @@
 # AI-BOT
 
-A small FastAPI-based chatbot that uses an LLM (via ollama) and simple tools.
+FastAPI chatbot via Ollama + a weather tool.
 
-## Quickstart
+## Setup
 
-1. Copy `.env.example` to `.env` and set any required environment variables.
-2. Install dependencies (example):
-
-```bash
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-3. Run locally with uvicorn:
+## Run
 
-```bash
-uvicorn main:app --reload
+```powershell
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-4. POST JSON to `/chat`:
+Docs: http://127.0.0.1:8000/docs
 
-```bash
-curl -X POST http://localhost:8000/chat \
-  -H "Content-Type: application/json" \
-  -d '{"user_input": "What's the weather in London?"}'
-```
+## Debug
+
+Run and Debug → **Debug FastAPI** → F5. Set breakpoint. Hit `/chat`.
+
+No `--reload` while debugging (child process skips breakpoints).
 
 ## Notes
 
-- The `models.weather` function currently returns mocked weather data. Replace
-  with a real API integration when ready.
-- The `TOOLS` list is intentionally empty; add tool descriptors when you add
-  tool implementations.
+- Needs Ollama + model `llama3.2` (or change `MODEL` in `main.py`).
+- `models.weather` is mocked until you set a real weather API in `.env`.
