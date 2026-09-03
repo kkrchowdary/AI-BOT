@@ -1,23 +1,58 @@
 name: Pylint
 
-on: [push]
+on:
+  push:
+    paths:
+      - "**/*.py"
+      - "requirements.txt"
+      - ".github/workflows/pylint.yml"
+
+  pull_request:
+    paths:
+      - "**/*.py"
+      - "requirements.txt"
+      - ".github/workflows/pylint.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pylint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  pylint:
+    name: Pylint / Python 3.12
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
+
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pylint
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Verify Pylint
+        run: |
+          python -m pylint --version
+
+      - name: Run Pylint
+        run: |
+          files="$(git ls-files '*.py')"
+
+          if [ -z "$files" ]; then
+            echo "No Python files found. Skipping Pylint."
+            exit 0
+          fi
+
+          python -m pylint $files
+          
