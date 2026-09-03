@@ -1,28 +1,14 @@
-import os
-from dotenv import load_dotenv
+"""Tool definitions exported to the language model runtime.
 
-load_dotenv()
+The chat runtime expects a sequence (list/iterable) of tools describing what
+external functions the assistant can call. For now this package exposes a
+small, empty list so that the runtime receives a valid value. Add tool
+specifications here if you integrate with ollama tool-calling features.
+"""
 
-WEATHER_API_KEY = os.getenv("weather_api_key")
+from typing import List
 
-WEATHER_URL = os.getenv("weather_api_url")
-
-TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get the current weather conditions for a specific city",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "city": {
-                        "type": "string",
-                        "description": "City name, e.g. 'Hyderabad' or 'London'",
-                    }
-                },
-                "required": ["city"],
-            },
-        },
-    }
-]
+# TOOLS should be a list of tool descriptors understood by the model runtime.
+# Keep this empty until you have concrete tool definitions to avoid runtime
+# errors during development.
+TOOLS: List[dict] = []

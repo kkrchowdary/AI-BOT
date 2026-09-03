@@ -1,50 +1,56 @@
+"""Pydantic models and helpers used by the AI-BOT application.
+
+This module exposes:
+- chatRequest: request model for the /chat endpoint
+- chatResponse: response model for the /chat endpoint
+- WeatherAPIError: exception raised for weather-related failures
+- weather(city): lightweight helper that returns current weather data for a city
+
+Note: The weather() helper is intentionally minimal and returns mocked data so
+that the application can run without an external weather API. Replace with a
+real implementation as needed.
+"""
+from typing import Optional, Dict
+
 from pydantic import BaseModel
-import requests
-from fastapi import HTTPException
-from tools import WEATHER_API_KEY
 
-#api_key = WEATHER_API_KEY
-
-class currentweather(BaseModel):
-    name: str
-    temperature: str
-    wind : str
-
-class WeatherList(BaseModel):
-    city : list[currentweather]    
-
-class WeatherAPIError(BaseModel):
-   "this is WeatherAPIError"
-
-def weather(city: list[str]):
-    if not WEATHER_API_KEY:
-        raise HTTPException(
-            status_code=500,
-            detail= "openweather API Key is missing"
-        )
-    
-    url= "https://api.openweathermap.org/data/2.5/weather"
-    params={
-        "q": city,
-        "appid": WEATHER_API_KEY,
-        "units":"metric"
-    }  
-
-    response = requests.get(url,params=params)
-    #print(response)
-    
-    if response.status_code != 200: 
-        try:
-            message = response.json().get("message","unable to fetch weather")
-        except ValueError:
-            message = "unable to fetch weather"    
-        return {"error": message}
-    data = response.json()
-    #print(data)
-    return data  
 
 class chatRequest(BaseModel):
+    """Request body for the /chat endpoint."""
+
     user_input: str
 
+
 class chatResponse(BaseModel):
-    reply: str    
+    """Response body for the /chat endpoint."""
+
+    reply: str
+
+
+class WeatherAPIError(Exception):
+    """Exception raised when a weather lookup fails."""
+
+
+def weather(city: Optional[str]) -> Dict[str, str]:
+    """Return a simple mocked weather result for the given city.
+
+    This is a placeholder implementation. In production replace this with a
+    call to a real weather API (OpenWeatherMap, Meteo, etc.) and raise
+    WeatherAPIError on failures.
+
+    Args:
+        city: City name to look up. If None or empty, a WeatherAPIError is raised.
+
+    Returns:
+        A dict containing basic weather information.
+    """
+    if not city:
+        raise WeatherAPIError("city is required for weather lookups")
+
+    # Mocked response — replace with real API call as needed
+    return {
+        "location": city,
+        "temperature": "20°C",
+        "wind": "5 km/h",
+        "condition": "Partly cloudy",
+    }
