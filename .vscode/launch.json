@@ -2,13 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug FastAPI",
-      "type": "debugpy",
+      "name": "Debug FastAPI (no-reload)",
+      "type": "python",
       "request": "launch",
       "module": "uvicorn",
       "args": [
         "main:app",
-        "--reload",
         "--host",
         "127.0.0.1",
         "--port",
@@ -21,7 +20,23 @@
         "PYTHONPATH": "${workspaceFolder}"
       },
       "cwd": "${workspaceFolder}",
-      "justMyCode": true
+      "justMyCode": true,
+      "subProcess": true
+    },
+    {
+      "name": "Attach to debugpy (for --reload)",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "${workspaceFolder}"
+        }
+      ]
     }
   ]
 }
