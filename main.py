@@ -9,7 +9,7 @@ import ollama
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from models import weather, chatRequest, chatResponse, WeatherAPIError
+from models import weather, chatRequest, chatResponse
 from prompts import SYSTEM_PROMPT
 from tools import TOOLS
 
@@ -27,7 +27,12 @@ OPTIONS = {
 
 
 class ChatBot:
-    """Manages chatbot interactions with the language model and tool calling."""
+    """Manages chatbot interactions with the language model and tool calling.
+
+    This class holds the conversation messages, calls the model, and handles
+    any tool invocations that the model requests. It keeps the code modular
+    so the same logic can be used for both the FastAPI endpoint and the CLI.
+    """
 
     def __init__(self, model: str = MODEL, options: dict | None = None):
         """Initialize the chatbot with the given model and options.
@@ -110,8 +115,7 @@ class ChatBot:
 
 @app.post("/chat", response_model=chatResponse)
 def askbot(payload: chatRequest):
-    """
-    Chat endpoint that accepts user input and returns bot response.
+    """Chat endpoint that accepts user input and returns bot response.
 
     Args:
         payload: chatRequest object containing user_input
