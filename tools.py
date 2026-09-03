@@ -18,7 +18,7 @@ TOOLS = [
                 "properties": {
                     "city": {
                         "type": "string",
-                        "description": "City name, e.g. 'Hyderabad' or 'London'",
+                        "description": "City name",
                     }
                 },
                 "required": ["city"],

@@ -2,8 +2,8 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Uvicorn (FastAPI)",
-      "type": "python",
+      "name": "Debug FastAPI",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "args": [
@@ -14,19 +14,14 @@
         "--port",
         "8000"
       ],
-      "jinja": true,
+      "python": "${workspaceFolder}/.venv/Scripts/python.exe",
+      "console": "integratedTerminal",
+      "envFile": "${workspaceFolder}/.env",
       "env": {
         "PYTHONPATH": "${workspaceFolder}"
-      }
-    },
-    {
-      "name": "Python: Attach (debugpy)",
-      "type": "python",
-      "request": "attach",
-      "connect": {
-        "host": "localhost",
-        "port": 5678
-      }
+      },
+      "cwd": "${workspaceFolder}",
+      "justMyCode": true
     }
   ]
 }
