@@ -1,8 +1,8 @@
 """Pydantic models and helpers used by the AI-BOT application.
 
 This module exposes:
-- chatRequest: request model for the /chat endpoint
-- chatResponse: response model for the /chat endpoint
+- ChatRequest: request model for the /chat endpoint
+- ChatResponse: response model for the /chat endpoint
 - WeatherAPIError: exception raised for weather-related failures
 - weather(city): lightweight helper that returns current weather data for a city
 
@@ -15,13 +15,13 @@ from typing import Optional, Dict
 from pydantic import BaseModel
 
 
-class chatRequest(BaseModel):
+class ChatRequest(BaseModel):
     """Request body for the /chat endpoint."""
 
     user_input: str
 
 
-class chatResponse(BaseModel):
+class ChatResponse(BaseModel):
     """Response body for the /chat endpoint."""
 
     reply: str

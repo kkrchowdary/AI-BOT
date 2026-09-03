@@ -9,7 +9,7 @@ import ollama
 from fastapi import FastAPI, HTTPException
 import uvicorn
 
-from models import weather, chatRequest, chatResponse
+from models import weather, ChatRequest, ChatResponse, WeatherAPIError
 from prompts import SYSTEM_PROMPT
 from tools import TOOLS
 
@@ -30,8 +30,8 @@ class ChatBot:
     """Manages chatbot interactions with the language model and tool calling.
 
     This class holds the conversation messages, calls the model, and handles
-    any tool invocations that the model requests. It keeps the code modular
-    so the same logic can be used for both the FastAPI endpoint and the CLI.
+    any tool invocations that the model requests. It keeps the code modular so
+    the same logic can be used for both the FastAPI endpoint and the CLI.
     """
 
     def __init__(self, model: str = MODEL, options: dict | None = None):
@@ -46,8 +46,17 @@ class ChatBot:
         self.options = options.copy() if options is not None else OPTIONS.copy()
         self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
+    def reset(self) -> None:
+        """Reset the conversation to the initial system prompt."""
+        self.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+
     def _call_model(self):
-        """Call the underlying model and return a stream (generator) of chunks."""
+        """Call the underlying model and return a stream (generator) of chunks.
+
+        The ollama.chat function is invoked with the current conversation
+        messages and tools. The stream=True option returns an iterator of
+        incremental chunks which we consume in _consume_stream.
+        """
         return ollama.chat(
             model=self.model,
             messages=self.messages,
@@ -79,8 +88,8 @@ class ChatBot:
         """Process a user input string and return the bot's response.
 
         The method appends the user message, calls the model, handles any tool
-        calls by invoking the appropriate helper (e.g., weather), and then
-        obtains the final assistant response.
+        calls by invoking the appropriate helper (for example, weather), and
+        then obtains the final assistant response.
         """
         self.messages.append({"role": "user", "content": user_input})
         print("Bot: ", end="", flush=True)
@@ -113,15 +122,15 @@ class ChatBot:
         return content
 
 
-@app.post("/chat", response_model=chatResponse)
-def askbot(payload: chatRequest):
+@app.post("/chat", response_model=ChatResponse)
+def askbot(payload: ChatRequest):
     """Chat endpoint that accepts user input and returns bot response.
 
     Args:
-        payload: chatRequest object containing user_input
+        payload: ChatRequest object containing user_input
 
     Returns:
-        chatResponse object with bot reply
+        ChatResponse object with bot reply
     """
     bot = ChatBot()
     try:
@@ -129,7 +138,7 @@ def askbot(payload: chatRequest):
     except Exception as exc:
         # Use explicit exception chaining to preserve original traceback
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-    return chatResponse(reply=reply)
+    return ChatResponse(reply=reply)
 
 
 def run_cli():
